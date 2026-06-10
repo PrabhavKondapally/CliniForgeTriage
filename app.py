@@ -6,38 +6,70 @@ if "high_priority_room" not in st.session_state:
 if "normal_room" not in st.session_state:
     st.session_state["normal_room"] = {}
 
-# 2. The Triage Logic Button
-if st.button("Run Patient Triage Audit"):
-    patients = ["Alice", "Bob", "Charlie", "David", "Eve"]
-    dosages = [600.0, 120.0, 750.0, 400.0, 95.0]
-    safety = 500.0
-    highPriorMax = 2
-    
-    # Reset rooms on click
-    st.session_state["high_priority_room"] = {}
-    st.session_state["normal_room"] = {}
-    
-    for i in range(len(patients)):
-        # FIX 1: Generate real patient IDs starting at 101 (101, 102, 103...)
-        patient_id = 101 + i 
-        
-        if dosages[i] > safety:
-            if len(st.session_state["high_priority_room"]) >= highPriorMax:
-                continue
-            st.session_state["high_priority_room"][patient_id] = [patients[i], dosages[i]]
-        else:
-            st.session_state["normal_room"][patient_id] = [patients[i], dosages[i]]
-            
-    st.rerun()
+st.title("🏥 Clinical Triage & Chart Review System")
 
-# 3. FIX 2: Convert dictionaries to clean row lists so Streamlit displays them correctly
+# 2. Dynamic Input Fields (Restored functionality)
+st.header("📥 Patient Data Input")
+
+names_raw = st.text_input(
+    "Enter Patient Names (separated by commas)", 
+    value="Alice, Bob, Charlie, David, Eve"
+)
+dosages_raw = st.text_input(
+    "Enter Dosages (separated by commas)", 
+    value="600, 120, 750, 400, 95"
+)
+
+# Configuration settings
+col_config_1, col_config_2 = st.columns(2)
+with col_config_1:
+    safety_threshold = st.number_input("Safety Threshold (mg)", min_value=0.0, value=500.0, step=10.0)
+with col_config_2:
+    bed_limit = st.number_input("High Priority Bed Limit", min_value=1, value=2, step=1)
+
+# 3. Processing Button with Dynamic Parsing
+if st.button("Run Patient Triage Audit"):
+    # Convert comma-separated strings into clean Python lists
+    patients = [name.strip() for name in names_raw.split(",") if name.strip()]
+    
+    try:
+        dosages = [float(dose.strip()) for dose in dosages_raw.split(",") if dose.strip()]
+    except ValueError:
+        st.error("❌ Error: Please ensure all dosages entered are valid numbers.")
+        st.stop()
+
+    # Validation: Ensure lists match in length
+    if len(patients) != len(dosages):
+        st.error(f"❌ Mismatch Error: You entered {len(patients)} names but {len(dosages)} dosages. They must match.")
+    else:
+        # Reset rooms for a fresh audit cycle
+        st.session_state["high_priority_room"] = {}
+        st.session_state["normal_room"] = {}
+        
+        # Run triage loop using the user-defined variables
+        for i in range(len(patients)):
+            patient_id = 101 + i 
+            
+            if dosages[i] > safety_threshold:
+                if len(st.session_state["high_priority_room"]) >= bed_limit:
+                    # Overflow: Skip to normal room instead of dropping the patient
+                    st.session_state["normal_room"][patient_id] = [patients[i], dosages[i]]
+                    continue
+                st.session_state["high_priority_room"][patient_id] = [patients[i], dosages[i]]
+            else:
+                st.session_state["normal_room"][patient_id] = [patients[i], dosages[i]]
+                
+        st.success("✅ Triage processing complete!")
+        st.rerun()
+
+# 4. Clean Row-Based Dashboard Display
+st.divider()
 st.subheader("🏥 Active Room Status")
 col1, col2 = st.columns(2)
 
 with col1:
     st.write("🔴 **High Priority Room**")
     if st.session_state["high_priority_room"]:
-        # Re-map the dictionary into standard rows
         hp_rows = [{"Patient ID": k, "Patient Name": v[0], "Dosage (mg)": v[1]} 
                    for k, v in st.session_state["high_priority_room"].items()]
         st.dataframe(hp_rows, use_container_width=True, hide_index=True)
@@ -53,11 +85,11 @@ with col2:
     else:
         st.info("Room is currently empty.")
 
-# 4. Chart Review Section (Matches IDs perfectly now)
+# 5. Chart Review Section (Dynamically alters stored data)
 st.divider()
 st.header("📋 Patient Chart Review & Overrides")
 
-search_id = st.number_input("Enter Patient ID", min_value=101, max_value=105, step=1)
+search_id = st.number_input("Enter Patient ID to Review", min_value=101, step=1)
 new_dosage_input = st.number_input("New Target Dosage (mg)", min_value=0.0, step=10.0)
 
 if st.button("Update Patient Record"):
@@ -74,4 +106,4 @@ if st.button("Update Patient Record"):
         st.rerun()
         
     else:
-        st.error(f"❌ Error: Patient ID {search_id} cannot be found.")
+        st.error(f"❌ Error: Patient ID {search_id} cannot be found in active memory.")

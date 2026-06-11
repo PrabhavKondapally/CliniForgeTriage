@@ -1,5 +1,13 @@
 import streamlit as st
 
+st.set_page_config(
+    page_title="CliniFlow Triage", 
+    page_icon="cliniflow_logo.png", 
+    layout="wide"
+)
+
+st.image("cliniflow_logo.png", width=100)
+
 def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
     # 1. Move from High Priority to Normal (No capacity limit to worry about here)
     pat_ids_to_move_to_norm = []
@@ -30,7 +38,7 @@ if "high_priority_room" not in st.session_state:
 if "normal_room" not in st.session_state:
     st.session_state["normal_room"] = {}
 
-st.title("🏥 Clinical Triage & Chart Review System")
+st.title("Clinical Triage & Chart Review System")
 
 # 2. Dynamic Input Fields (Restored functionality)
 st.header("📥 Patient Data Input")

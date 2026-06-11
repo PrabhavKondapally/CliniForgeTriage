@@ -1,6 +1,6 @@
 # 🏥 Clinical Patient Priority Queue & Triage Simulator
 
-### 🌐 [Click Here to View the Live Web Application][(https://cliniforge.streamlit.app/)]
+### 🌐 [Click Here to View the Live Web Application](https://cliniforge.streamlit.app/)
 
 ---
 

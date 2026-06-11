@@ -119,15 +119,15 @@ new_dosage_input = st.number_input("New Target Dosage (mg)", min_value=0.0, step
 if st.button("Update Patient Record"):
     if search_id in st.session_state["high_priority_room"]:
         st.session_state["high_priority_room"][search_id][1] = new_dosage_input
-        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         patient_name = st.session_state["high_priority_room"][search_id][0]
+        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         st.success(f"✅ High Priority Updated: {patient_name} (ID: {search_id}) changed to {new_dosage_input}mg.")
         st.rerun()
         
     elif search_id in st.session_state["normal_room"]:
         st.session_state["normal_room"][search_id][1] = new_dosage_input
-        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         patient_name = st.session_state["normal_room"][search_id][0]
+        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         st.success(f"✅ Normal Room Updated: {patient_name} (ID: {search_id}) changed to {new_dosage_input}mg.")
         st.rerun()
         

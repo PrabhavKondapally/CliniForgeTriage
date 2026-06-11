@@ -1,8 +1,8 @@
 import streamlit as st
 
 main_page = st.Page("app.py", title="Main Dashboard", icon="📊", default=True)
-triage_page = st.Page("pages/1_Patient_Triage.py", title="Patient Triage", icon="📋")
-review_page = st.Page("pages/2_Chart_Review.py", title="Chart Review", icon="🔍")
+triage_page = st.Page("pages/Patient_Triage.py", title="Patient Triage", icon="📋")
+review_page = st.Page("pages/Chart_Review.py", title="Chart Review", icon="🔍")
 
 # Pass them into the navigation layout
 pg = st.navigation([main_page, triage_page, review_page])

@@ -24,6 +24,23 @@ st.set_page_config(
 
 st.sidebar.title("CliniForge Navigation")
 
+# --- SIDEBAR CONFIGURATION ---
+st.sidebar.markdown("# 🏥 CliniForge Navigation")
+st.sidebar.markdown("---")  # Adds a clean visual divider line
+
+# App Description/Context for Admissions Officers
+st.sidebar.info(
+    """
+    **Clinical Triage & Chart Review System**
+    
+    This platform automates patient data ingestion, prioritization, and chart analysis to optimize clinical workflows.
+    """
+)
+
+st.sidebar.markdown("---")
+# You can add interactive widgets here later (like filtering options or status trackers)
+st.sidebar.caption("v1.0.0 | Built for Admissions Review")
+
 # 1. Creating two columns at the top of your page
 # The [1, 4] ratio makes the logo column narrow and the text column wide
 col1, col2 = st.columns([1, 4])

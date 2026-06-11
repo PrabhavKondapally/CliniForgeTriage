@@ -1,12 +1,12 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="CliniFlow Triage", 
-    page_icon="cliniflow_logo.png", 
+    page_title="CliniForge Triage", 
+    page_icon="cliniforge_logo.png", 
     layout="wide"
 )
 
-st.image("cliniflow_logo.png", width=100)
+st.image("cliniforge_logo.png", width=100)
 
 def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
     # 1. Move from High Priority to Normal (No capacity limit to worry about here)

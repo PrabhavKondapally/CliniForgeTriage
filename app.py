@@ -22,8 +22,8 @@ st.set_page_config(
     layout="wide"
 )
 
-st.sidebar.image("cliniforge_logo.png", use_container_width=True)
-st.sidebar.markdown("<br>", unsafe_allow_html=True)
+st.sidebar.title("CliniForge Navigation")
+st.sidebar.write("Welcome to the CliniForge application dashboard built for college admissions review.")
 
 # 1. Creating two columns at the top of your page
 # The [1, 4] ratio makes the logo column narrow and the text column wide

@@ -7,6 +7,24 @@ st.set_page_config(
     layout="wide"
 )
 
+# 1. Creating two columns at the top of your page
+# The [1, 4] ratio makes the logo column narrow and the text column wide
+col1, col2 = st.columns([1, 4])
+
+with col1:
+    # Displaying logo
+    st.image("cliniforge_logo.png", width=90)
+
+with col2:
+    # Adding a bit of vertical spacing so the text aligns with the middle of the logo
+    st.markdown("<div style='padding-top: 15px;'></div>", unsafe_allow_html=True)
+    
+    # Displaying the newly created two-tone CliniForge text banner
+    st.image("CliniForgeBanner.png", width=350)
+
+# Adding a thin horizontal divider line underneath the brand-new header
+st.divider()
+
 # 2. Inject custom CSS to load and apply the Inter font
 st.markdown(
     """
@@ -69,24 +87,6 @@ elif st.session_state.current_page == "Charts":
     # PASTE YOUR CHART REVIEW CODE RIGHT HERE
     # ----------------------------------------------------
     st.write("Your AI summaries, chart analyses, or patient histories go here.")
-
-# 1. Creating two columns at the top of your page
-# The [1, 4] ratio makes the logo column narrow and the text column wide
-col1, col2 = st.columns([1, 4])
-
-with col1:
-    # Displaying logo
-    st.image("cliniforge_logo.png", width=90)
-
-with col2:
-    # Adding a bit of vertical spacing so the text aligns with the middle of the logo
-    st.markdown("<div style='padding-top: 15px;'></div>", unsafe_allow_html=True)
-    
-    # Displaying the newly created two-tone CliniForge text banner
-    st.image("CliniForgeBanner.png", width=350)
-
-# Adding a thin horizontal divider line underneath the brand-new header
-st.divider()
 
 def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
     # 1. Move from High Priority to Normal (No capacity limit to worry about here)

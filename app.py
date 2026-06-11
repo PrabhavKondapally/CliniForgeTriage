@@ -1,5 +1,29 @@
 import streamlit as st
 
+def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
+    # 1. Move from High Priority to Normal (No capacity limit to worry about here)
+    pat_ids_to_move_to_norm = []
+    for patID in hpRoom.keys():
+        if hpRoom[patID][1] <= safety_threshold:
+            pat_ids_to_move_to_norm.append(patID)
+
+    for patID in pat_ids_to_move_to_norm:
+        normRoom[patID] = hpRoom.pop(patID)
+
+    # 2. Move from Normal to High Priority (Must respect bed_limit!)
+    pat_ids_to_move_to_hp = []
+    for patID in normRoom.keys():
+        if normRoom[patID][1] > safety_threshold:
+            pat_ids_to_move_to_hp.append(patID)
+
+    for patID in pat_ids_to_move_to_hp:
+        # Only move if there is an available bed
+        if len(hpRoom) < bed_limit:
+            hpRoom[patID] = normRoom.pop(patID)
+        else:
+            # If HP room is full, they have to stay in the Normal Room (Overflow)
+            break
+
 # 1. Initialize session state at the very top of your app
 if "high_priority_room" not in st.session_state:
     st.session_state["high_priority_room"] = {}
@@ -95,12 +119,14 @@ new_dosage_input = st.number_input("New Target Dosage (mg)", min_value=0.0, step
 if st.button("Update Patient Record"):
     if search_id in st.session_state["high_priority_room"]:
         st.session_state["high_priority_room"][search_id][1] = new_dosage_input
+        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         patient_name = st.session_state["high_priority_room"][search_id][0]
         st.success(f"✅ High Priority Updated: {patient_name} (ID: {search_id}) changed to {new_dosage_input}mg.")
         st.rerun()
         
     elif search_id in st.session_state["normal_room"]:
         st.session_state["normal_room"][search_id][1] = new_dosage_input
+        rearrange(st.session_state["high_priority_room"], st.session_state["normal_room"], safety_threshold, bed_limit)
         patient_name = st.session_state["normal_room"][search_id][0]
         st.success(f"✅ Normal Room Updated: {patient_name} (ID: {search_id}) changed to {new_dosage_input}mg.")
         st.rerun()

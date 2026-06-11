@@ -1,6 +1,6 @@
 # 🏥 Clinical Patient Priority Queue & Triage Simulator
 
-### 🌐 [Click Here to View the Live Web Application](https://cliniforge.streamlit.app/)
+### 🌐 [Click Here to View the Live Web Application](https://cliniforgetriage.streamlit.app/)
 
 ---
 
@@ -39,7 +39,7 @@ While commercial Electronic Health Record (EHR) integrations (like Epic or Cerne
 
 ## 🚀 How to Use the Simulator
 
-1. Open the [Live Web Application](https://cliniforge.streamlit.app/).
+1. Open the [Live Web Application](https://cliniforgetriage.streamlit.app/).
 2. In the main feed, input patient names and dosages separated by commas.
 3. Input the **Safety Threshold Limit** and **High-Priority Bed Capacity**.
 4. Click **Run Triage Audit** to see the system process the data and manage room capacities instantly.

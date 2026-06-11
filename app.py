@@ -20,7 +20,7 @@ def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
         else:
             break
 
-# Navigation configuration
+# Navigation configurations
 main_page = st.Page("app.py", title="Main Dashboard", icon="📊", default=True)
 triage_page = st.Page("pages/Patient_Triage.py", title="Patient Triage", icon="📋")
 review_page = st.Page("pages/Chart_Review.py", title="Chart Review", icon="🔍")
@@ -33,16 +33,18 @@ st.set_page_config(
     layout="wide"
 )
 
-# Initialize global tracking states for patient allocation
+# Global tracking states
 if "high_priority_room" not in st.session_state:
     st.session_state["high_priority_room"] = {}
 if "normal_room" not in st.session_state:
     st.session_state["normal_room"] = {}
 
-# Execute routing logic
-pg.run()
+# Execute sub-pages immediately and terminate entry script execution
+if pg.title != "Main Dashboard":
+    pg.run()
+    st.stop()
 
-# Global styling injection
+# Fallback layout context for the dashboard home view
 st.markdown(
     """
     <style>
@@ -55,7 +57,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Main Dashboard layout and header
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("cliniforge_logo.png", width=90)

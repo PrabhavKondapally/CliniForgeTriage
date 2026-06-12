@@ -41,6 +41,10 @@ if "high_priority_room" not in st.session_state:
     st.session_state["high_priority_room"] = {}
 if "normal_room" not in st.session_state:
     st.session_state["normal_room"] = {}
+if "waitlist" not in st.session_state:
+    st.session_state["waitlist"] = {}
+if "next_patient_id" not in st.session_state:
+    st.session_state["next_patient_id"] = 101
 
 # Route control checkpoint
 if pg.title != "Main Dashboard":
@@ -108,12 +112,26 @@ with st.form("override_form", clear_on_submit=True):
             found = True
             
         if found:
-            st.success(f"Patient {target_id} dosage updated to {new_dosage} mg successfully!")
+        # Automatically rearrange patients after a dosage update
+            rearrange(
+                st.session_state["high_priority_room"],
+                st.session_state["normal_room"],
+                ui_threshold,
+                ui_bed_limit,
+            )
+
+            st.success(
+                f"Patient {target_id} dosage updated to {new_dosage} mg successfully!"
+            )
+
+            # Refresh the page so the updated tables appear immediately
+            st.rerun()
+
         else:
             st.error(f"Patient ID {target_id} not found in any active room.")
 
 # Display Room Status
-col_hp, col_norm = st.columns(2)
+col_hp, col_norm, col_wait = st.columns(3)
 
 # High Priority Room Display
 with col_hp:
@@ -134,6 +152,35 @@ with col_norm:
         st.dataframe(norm_rows, use_container_width=True, hide_index=True)
     else:
         st.info("Room is currently empty.")
+
+# Waitlist Display
+# Waitlist Display
+with col_wait:
+    st.write("**Waitlist**")
+
+    if st.session_state["waitlist"]:
+        wait_rows = []
+
+        for position, (patient_id, patient_data) in enumerate(
+            st.session_state["waitlist"].items(),
+            start=1,
+        ):
+            wait_rows.append(
+                {
+                    "Position": position,
+                    "Patient ID": patient_id,
+                    "Patient Name": patient_data[0],
+                    "Dosage (mg)": patient_data[1],
+                }
+            )
+
+        st.dataframe(
+            wait_rows,
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info("Waitlist is currently empty.")
 
 st.write("")
 

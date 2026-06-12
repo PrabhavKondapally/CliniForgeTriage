@@ -35,7 +35,8 @@ if st.button("Run Patient Triage Audit"):
         st.session_state["normal_room"] = {}
         
         for i in range(len(patients)):
-            patient_id = 101 + i 
+            patient_id = st.session_state["next_patient_id"]
+            st.session_state["next_patient_id"] += 1
             
             if dosages[i] > safety_threshold:
                 if len(st.session_state["high_priority_room"]) >= bed_limit:

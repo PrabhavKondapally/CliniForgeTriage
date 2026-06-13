@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Core sorting algorithm for active patient redistribution
-def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
+def rearrange(hpRoom, normRoom, waitlist, safety_threshold, bed_limit):
     # Demote patients falling below or equal to the safety threshold
     pat_ids_to_move_to_norm = []
     for patID in hpRoom.keys():
@@ -21,7 +21,31 @@ def rearrange(hpRoom, normRoom, safety_threshold, bed_limit):
         if len(hpRoom) < bed_limit:
             hpRoom[patID] = normRoom.pop(patID)
         else:
-            break
+            patient_data = normRoom.pop(patID)
+
+            arrival_order = st.session_state["next_waitlist_order"]
+            st.session_state["next_waitlist_order"] += 1
+
+            waitlist[patID] = [
+                patient_data[0],
+                patient_data[1],
+                arrival_order,
+            ]
+    
+    # Fill any newly available high-priority beds from the waitlist
+    while len(hpRoom) < bed_limit and waitlist:
+
+        best_patient_id = sorted(
+            waitlist,
+            key=lambda pid: (-waitlist[pid][1], waitlist[pid][2]),
+        )[0]
+
+        patient_data = waitlist.pop(best_patient_id)
+
+        hpRoom[best_patient_id] = [
+            patient_data[0],
+            patient_data[1],
+        ]
 
 # Navigation configurations
 main_page = st.Page("app.py", title="Main Dashboard", icon="📊", default=True)
@@ -182,6 +206,7 @@ with st.form("override_form", clear_on_submit=True):
             rearrange(
                 st.session_state["high_priority_room"],
                 st.session_state["normal_room"],
+                st.session_state["waitlist"],
                 ui_threshold,
                 ui_bed_limit,
             )
@@ -260,6 +285,7 @@ if st.button("Apply Changes & Rearrange Patients", type="primary"):
     rearrange(
         st.session_state["high_priority_room"], 
         st.session_state["normal_room"], 
+        st.session_state["waitlist"],
         ui_threshold, 
         ui_bed_limit
     )

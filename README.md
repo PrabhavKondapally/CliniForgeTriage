@@ -1,51 +1,139 @@
-# 🏥 Clinical Patient Priority Queue & Triage Simulator
+# CliniForge Triage
 
-### 🌐 [Click Here to View the Live Web Application](https://cliniforgetriage.streamlit.app/)
+An interactive clinical workflow simulation developed in Python and Streamlit for modeling patient prioritization, capacity-aware room allocation, and dynamic patient redistribution under configurable operating constraints.
+
+🌐 **Live Application:** https://cliniforgetriage.streamlit.app
+
+> **Disclaimer:** CliniForge is an educational software project designed for demonstration and learning purposes. It is **not** intended for clinical deployment, diagnosis, treatment, or medical decision support.
+
+---
+<img width="1917" height="863" alt="image" src="https://github.com/user-attachments/assets/8648725d-dbbe-488a-b8d7-d55ca4219923" />
+<img width="1918" height="867" alt="image" src="https://github.com/user-attachments/assets/7af5a3ba-5ad3-4035-8ae8-be9af1f7ee7b" />
+<img width="1918" height="867" alt="image" src="https://github.com/user-attachments/assets/1b4f5077-516d-44d9-8982-3ad03c4f7f4d" />
+<img width="1918" height="868" alt="image" src="https://github.com/user-attachments/assets/d00c6a51-2419-4bca-adbb-b8e141b52df5" />
+
+
+
+
+## Overview
+
+CliniForge Triage provides a configurable environment for simulating patient allocation and redistribution within a simplified hospital workflow. The application emphasizes software architecture, state management, algorithmic decision-making, and interactive user experience through a healthcare-inspired use case.
+
+The project is designed to demonstrate practical programming concepts while maintaining a professional and intuitive interface for experimentation and visualization.
 
 ---
 
-## 📌 Project Overview
-This project is an interactive web application designed to simulate hospital capacity management and clinical dosage safety auditing. Built using **Python** and **Streamlit**, the simulator models real-world healthcare operational challenges by automatically routing incoming patients into optimized care facilities based on dynamic safety thresholds and strict room/bed constraints.
+## Core Functionality
 
-I engineered this project to explore the intersection of **Computer Science and Healthcare**, specifically studying how software logic can prevent emergency department overcrowding, mitigate clinical risk, and automate administrative workflows for triage nurses.
+### Patient Intake
+
+* Register new patients through an interactive dashboard
+* Automatic assignment of unique patient identifiers
+* Configurable dosage-based triage thresholds
+* Real-time room assignment upon admission
+
+### Dynamic Redistribution
+
+* Automatic reassessment following dosage updates
+* Configurable high-priority bed capacity
+* Threshold-driven promotion and demotion logic
+* Persistent state management across application pages
+
+### High-Priority Waitlist
+
+* Automatic overflow handling when capacity is exceeded
+* Hybrid prioritization model:
+
+  * Primary ranking by dosage
+  * Secondary ranking by arrival order
+* Automatic promotion when capacity becomes available
+
+### Dashboard Interface
+
+* Multi-page navigation
+* Real-time room visualization
+* Interactive patient management
+* Configurable operational parameters
+
+---
+
+## System Design
+
+```text
+                  +----------------+
+                  |  New Patient   |
+                  +-------+--------+
+                          |
+                          v
+                 Dosage > Threshold?
+                    /            \
+                  Yes             No
+                  |               |
+                  v               v
+        High Priority        Normal Room
+             |
+             | Capacity Full
+             v
+      High Priority Waitlist
+             |
+             | Bed Available
+             v
+        High Priority Room
+```
+
+Patient redistribution is performed dynamically as operating parameters or patient attributes change, ensuring that assignments remain consistent with current system constraints.
 
 ---
 
-## ⚙️ Key Features & Technical Architecture
+## Technical Stack
 
-* **Dynamic Risk Evaluation:** Users can input a list of patients and their prescribed medication dosages. The backend parses and cleans the string inputs using data sterilization techniques.
-* **Algorithmic Patient Routing:** The system runs a core evaluation loop that categorizes patients into a "High Priority Isolation Wing" or a "Normal Ward" based on a **user-defined safety ceiling**.
-* **Embedded Resource Constraints:** Models a real-world hospital bottleneck by tracking maximum bed capacities. If critical patients exceed available beds, the software safely triggers a defensive deployment halt to signal an operational overflow.
-* **Interactive UI/UX Dashboard:** Built a clean, professional multi-column dashboard featuring live operational metrics, system state cards, and structured JSON data views.
-
----
-
-## 🛠️ Tech Stack & Concepts Explored
-
-* **Language:** Python 3
-* **Framework:** Streamlit (UI & Cloud Deployment)
-* **Version Control:** Git & GitHub Codespaces
-* **Computer Science Concepts:** Control flow logic, nested conditional statements, array parsing, error handling (defensive programming), and resource constraint algorithms.
-* **Healthcare Concepts:** Patient flow tracking, PHI protection logic, triage tiering, and medical dosage threshold compliance.
+* Python
+* Streamlit
+* Session State Management
+* Custom redistribution algorithms
+* Dynamic UI rendering
 
 ---
 
-## 📈 Context & Inspiration (Why I Built This)
-In modern healthcare systems, **Patient Flow and Capacity Management** are critical to saving lives. When Intensive Care Units (ICUs) or Emergency Departments bottleneck, it leads to overcrowding and delayed care. 
+## Repository Structure
 
-While commercial Electronic Health Record (EHR) integrations (like Epic or Cerner) use complex database communication protocols like FHIR, this simulator serves as a high-level proof-of-concept. It demonstrates how conditional logic and software constraints can be leveraged to optimize resource allocation during high-intake hospital shifts.
+```text
+CliniForgeTriage/
+│
+├── app.py
+├── pages/
+│   ├── Patient_Triage.py
+│   └── Chart_Review.py
+├── cliniforge_logo.png
+├── CliniForgeBanner.png
+└── README.md
+```
+
+---
+
+## Development Roadmap
+
+Planned enhancements include:
+
+* CSV-based patient import/export
+* Statistical summaries and reporting
+* Interactive data visualization
+* Historical patient activity tracking
+* Expanded chart review capabilities
+* Clinical analytics dashboard
 
 ---
 
-## 🚀 How to Use the Simulator
+## Design Philosophy
 
-1. Open the [Live Web Application](https://cliniforgetriage.streamlit.app/).
-2. In the main feed, input patient names and dosages separated by commas.
-3. Input the **Safety Threshold Limit** and **High-Priority Bed Capacity**.
-4. Click **Run Triage Audit** to see the system process the data and manage room capacities instantly.
-5. If needed, you have the option to download the room data as a CSV.
-6. You can also edit a patient's dosage.
-7. If a patient's dosage has been edited, the app will automatically update room assignments.
+CliniForge has been developed through iterative refinement, with new functionality added as workflow requirements evolved. The project prioritizes maintainability, modular design, and transparent system behavior over unnecessary complexity.
+
+Its objective is not to replicate a production electronic health record system, but to explore how software engineering principles—including state management, algorithm design, and user-centered interface development—can be applied to healthcare-inspired operational problems.
 
 ---
-💡 *Created by Prabhav Kondapally as a portfolio project demonstrating an interest in Biomedical Engineering / Computer Science / Digital Health Applications.*
+
+## License
+
+This project is licensed under the **MIT License**.
+
+Please refer to the `LICENSE` file included in this repository for the complete license text.

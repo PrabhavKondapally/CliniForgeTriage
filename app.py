@@ -45,6 +45,8 @@ if "waitlist" not in st.session_state:
     st.session_state["waitlist"] = {}
 if "next_patient_id" not in st.session_state:
     st.session_state["next_patient_id"] = 101
+if "next_waitlist_order" not in st.session_state:
+    st.session_state["next_waitlist_order"] = 1
 
 # Route control checkpoint
 if pg.title != "Main Dashboard":
@@ -81,12 +83,76 @@ st.subheader("Active Room Status Overview")
 
 # Parameter Configuration Inputs
 st.write("### Quick Adjustment Controls")
-col_ctrl1, col_ctrl2 = st.columns(2)
-with col_ctrl1:
-    ui_threshold = st.number_input("Adjust Safety Threshold (mg)", min_value=0.0, value=500.0, step=10.0)
-with col_ctrl2:
-    ui_bed_limit = st.number_input("Adjust Bed Limit Capacity", min_value=1, value=2, step=1)
 
+col_ctrl1, col_ctrl2 = st.columns(2)
+
+with col_ctrl1:
+    ui_threshold = st.number_input(
+        "Adjust Safety Threshold (mg)",
+        min_value=0.0,
+        value=500.0,
+        step=10.0,
+    )
+
+with col_ctrl2:
+    ui_bed_limit = st.number_input(
+        "Adjust Bed Limit Capacity",
+        min_value=1,
+        value=2,
+        step=1,
+    )
+
+st.write("### Add New Patient")
+
+with st.form("add_patient_form", clear_on_submit=True):
+    col_add1, col_add2 = st.columns(2)
+
+    with col_add1:
+        patient_name = st.text_input("Patient Name")
+
+    with col_add2:
+        patient_dosage = st.number_input(
+            "Patient Dosage (mg)",
+            min_value=0.0,
+            step=10.0,
+        )
+
+    submit_patient = st.form_submit_button("Add Patient")
+
+    if submit_patient:
+        patient_id = st.session_state["next_patient_id"]
+        st.session_state["next_patient_id"] += 1
+
+        # High-priority candidate
+        if patient_dosage > ui_threshold:
+
+            # Bed available
+            if len(st.session_state["high_priority_room"]) < ui_bed_limit:
+                st.session_state["high_priority_room"][patient_id] = [
+                    patient_name,
+                    patient_dosage,
+                ]
+
+            # No bed available -> send to waitlist
+            else:
+                arrival_order = st.session_state["next_waitlist_order"]
+                st.session_state["next_waitlist_order"] += 1
+
+                st.session_state["waitlist"][patient_id] = [
+                    patient_name,
+                    patient_dosage,
+                    arrival_order,
+                ]
+
+        # Normal patient
+        else:
+            st.session_state["normal_room"][patient_id] = [
+                patient_name,
+                patient_dosage,
+            ]
+
+        st.success(f"Patient added successfully! Assigned ID: {patient_id}")
+        st.rerun()
 # =========================================================================
 # INDIVIDUAL PATIENT DOSAGE OVERRIDE FEATURE
 # =========================================================================
@@ -161,8 +227,13 @@ with col_wait:
     if st.session_state["waitlist"]:
         wait_rows = []
 
-        for position, (patient_id, patient_data) in enumerate(
+        sorted_waitlist = sorted(
             st.session_state["waitlist"].items(),
+            key=lambda item: (-item[1][1], item[1][2]),
+        )
+
+        for position, (patient_id, patient_data) in enumerate(
+            sorted_waitlist,
             start=1,
         ):
             wait_rows.append(

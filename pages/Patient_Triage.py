@@ -33,7 +33,10 @@ if st.button("Run Patient Triage Audit"):
     else:
         st.session_state["high_priority_room"] = {}
         st.session_state["normal_room"] = {}
-        
+        st.session_state["waitlist"] = {}
+        st.session_state["next_patient_id"] = 101
+        st.session_state["next_waitlist_order"] = 1
+
         for i in range(len(patients)):
             patient_id = st.session_state["next_patient_id"]
             st.session_state["next_patient_id"] += 1

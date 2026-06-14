@@ -42,12 +42,28 @@ if st.button("Run Patient Triage Audit"):
             st.session_state["next_patient_id"] += 1
             
             if dosages[i] > safety_threshold:
-                if len(st.session_state["high_priority_room"]) >= bed_limit:
-                    st.session_state["normal_room"][patient_id] = [patients[i], dosages[i]]
-                    continue
-                st.session_state["high_priority_room"][patient_id] = [patients[i], dosages[i]]
+
+                if len(st.session_state["high_priority_room"]) < bed_limit:
+                    st.session_state["high_priority_room"][patient_id] = [
+                        patients[i],
+                        dosages[i],
+                    ]
+
+                else:
+                    arrival_order = st.session_state["next_waitlist_order"]
+                    st.session_state["next_waitlist_order"] += 1
+
+                    st.session_state["waitlist"][patient_id] = [
+                        patients[i],
+                        dosages[i],
+                        arrival_order,
+                    ]
+
             else:
-                st.session_state["normal_room"][patient_id] = [patients[i], dosages[i]]
+                st.session_state["normal_room"][patient_id] = [
+                    patients[i],
+                    dosages[i],
+                ]
                 
         st.success("Triage processing complete! Navigate to the Main Dashboard to view allocations.")
 

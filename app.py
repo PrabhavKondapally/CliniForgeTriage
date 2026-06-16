@@ -221,6 +221,57 @@ with st.form("override_form", clear_on_submit=True):
         else:
             st.error(f"Patient ID {target_id} not found in any active room.")
 
+# Remove Patient form
+st.write("### Remove Patient")
+
+with st.form("remove_patient_form", clear_on_submit=True):
+
+    remove_id = st.number_input(
+        "Enter Patient ID to Remove",
+        min_value=100,
+        step=1,
+    )
+
+    submit_remove = st.form_submit_button("Remove Patient")
+
+    if submit_remove:
+
+        removed = False
+
+        if remove_id in st.session_state["high_priority_room"]:
+            del st.session_state["high_priority_room"][remove_id]
+            removed = True
+
+        elif remove_id in st.session_state["normal_room"]:
+            del st.session_state["normal_room"][remove_id]
+            removed = True
+
+        elif remove_id in st.session_state["waitlist"]:
+            del st.session_state["waitlist"][remove_id]
+            removed = True
+
+        if removed:
+
+            rearrange(
+                st.session_state["high_priority_room"],
+                st.session_state["normal_room"],
+                st.session_state["waitlist"],
+                ui_threshold,
+                ui_bed_limit,
+            )
+
+            st.success(
+                f"Patient {remove_id} removed successfully."
+            )
+
+            st.rerun()
+
+        else:
+            st.error(
+                f"Patient ID {remove_id} not found."
+            )
+
+
 # Display Room Status
 col_hp, col_norm, col_wait = st.columns(3)
 

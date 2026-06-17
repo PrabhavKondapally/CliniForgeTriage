@@ -1,35 +1,54 @@
 import streamlit as st
+import pandas as pd
 
 st.title("Patient Triage System")
 st.write("---")
 st.header("Patient Data Input")
 
-names_raw = st.text_input(
-    "Enter Patient Names (separated by commas)", 
-    value="Alice, Bob, Charlie, David, Eve"
+st.subheader("Bulk Patient Intake")
+
+uploaded_file = st.file_uploader(
+    "Upload Patient CSV",
+    type=["csv"]
 )
-dosages_raw = st.text_input(
-    "Enter Dosages (separated by commas)", 
-    value="600, 120, 750, 400, 95"
+
+st.caption(
+    "Expected columns: Patient Name, Dosage"
 )
 
 col_config_1, col_config_2 = st.columns(2)
 with col_config_1:
     safety_threshold = st.number_input("Safety Threshold (mg)", min_value=0.0, value=500.0, step=10.0)
 with col_config_2:
-    bed_limit = st.number_input("High Priority Bed Limit", min_value=1, value=2, step=1)
+    bed_limit = st.number_input(
+        "High Priority Bed Limit",
+        min_value=1,
+        value=st.session_state["bed_limit"],
+        step=1,
+    )
 
+st.session_state["bed_limit"] = bed_limit
 if st.button("Run Patient Triage Audit"):
-    patients = [name.strip() for name in names_raw.split(",") if name.strip()]
-    
+    if uploaded_file is None:
+        st.error("Please upload a CSV file.")
+        st.stop()
+
     try:
-        dosages = [float(dose.strip()) for dose in dosages_raw.split(",") if dose.strip()]
-    except ValueError:
-        st.error("Error: Please ensure all dosages entered are valid numbers.")
+        df = pd.read_csv(uploaded_file)
+
+        patients = df["Patient Name"].tolist()
+        dosages = df["Dosage"].tolist()
+
+    except Exception:
+        st.error(
+            "CSV format error. Expected columns: Patient Name, Dosage"
+        )
         st.stop()
 
     if len(patients) != len(dosages):
-        st.error(f"Mismatch Error: You entered {len(patients)} names but {len(dosages)} dosages.")
+        st.error(
+            f"Mismatch Error: You entered {len(patients)} names but {len(dosages)} dosages."
+        )
     else:
         st.session_state["high_priority_room"] = {}
         st.session_state["normal_room"] = {}
@@ -65,7 +84,11 @@ if st.button("Run Patient Triage Audit"):
                     dosages[i],
                 ]
                 
-        st.success("Triage processing complete! Navigate to the Main Dashboard to view allocations.")
+        st.success(f"""
+    Triage processing complete!
+
+    Imported {len(patients)} patients
+    """)
 
 # Branding footer
 st.markdown("<br><br><br><br>", unsafe_allow_html=True)

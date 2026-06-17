@@ -71,6 +71,8 @@ if "next_patient_id" not in st.session_state:
     st.session_state["next_patient_id"] = 101
 if "next_waitlist_order" not in st.session_state:
     st.session_state["next_waitlist_order"] = 1
+if "bed_limit" not in st.session_state:
+    st.session_state["bed_limit"] = 2
 
 # Route control checkpoint
 if pg.title != "Main Dashboard":
@@ -122,9 +124,11 @@ with col_ctrl2:
     ui_bed_limit = st.number_input(
         "Adjust Bed Limit Capacity",
         min_value=1,
-        value=2,
+        value=st.session_state["bed_limit"],
         step=1,
     )
+
+st.session_state["bed_limit"] = ui_bed_limit
 
 st.write("### Add New Patient")
 

@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+import plotly.express as px
 
 st.title("Clinical Chart Review")
 st.write("---")
@@ -69,6 +71,58 @@ with col8:
     st.metric("Bed Utilization (%)", bed_utilization)
 
 st.write("---")
+
+st.subheader("High Priority Bed Occupancy")
+
+occupied_beds = hp_count
+total_beds = bed_limit
+
+bed_display = ""
+
+for i in range(total_beds):
+
+    if i < occupied_beds:
+        bed_display += "🟥 "
+    else:
+        bed_display += "⬜ "
+
+st.markdown(f"## {bed_display}")
+
+st.write(
+    f"**{occupied_beds} / {total_beds} Beds Occupied**"
+)
+
+st.write("---")
+
+st.subheader("Patient Distribution")
+
+distribution_df = pd.DataFrame(
+    {
+        "Category": [
+            "High Priority",
+            "Normal Room",
+            "Waitlist",
+        ],
+        "Patients": [
+            hp_count,
+            normal_count,
+            waitlist_count,
+        ],
+    }
+)
+
+fig = px.bar(
+    distribution_df,
+    x="Category",
+    y="Patients",
+    title="Patient Distribution by Room",
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+)
+
 # Branding footer
 st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
 st.divider()

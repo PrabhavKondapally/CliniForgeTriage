@@ -1,4 +1,4 @@
-# CliniForge Triage
+# CliniForge Triage (v 1.5)
 
 An interactive clinical workflow simulation developed in Python and Streamlit for modeling patient prioritization, capacity-aware room allocation, and dynamic patient redistribution under configurable operating constraints.
 

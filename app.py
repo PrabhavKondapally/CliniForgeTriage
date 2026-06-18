@@ -51,8 +51,9 @@ def rearrange(hpRoom, normRoom, waitlist, safety_threshold, bed_limit):
 main_page = st.Page("app.py", title="Main Dashboard", icon="📊", default=True)
 triage_page = st.Page("pages/Patient_Triage.py", title="Patient Triage", icon="📋")
 review_page = st.Page("pages/Chart_Review.py", title="Chart Review", icon="🔍")
+session_page = st.Page("pages/Session_Info.py", title="Session Information", icon="📝")
 
-pg = st.navigation([main_page, triage_page, review_page])
+pg = st.navigation([main_page, triage_page, review_page, session_page])
 
 st.set_page_config(
     page_title="CliniForge Triage", 
@@ -73,6 +74,8 @@ if "next_waitlist_order" not in st.session_state:
     st.session_state["next_waitlist_order"] = 1
 if "bed_limit" not in st.session_state:
     st.session_state["bed_limit"] = 2
+if "audit_log" not in st.session_state:
+    st.session_state["audit_log"] = []
 
 # Route control checkpoint
 if pg.title != "Main Dashboard":
@@ -161,6 +164,10 @@ with st.form("add_patient_form", clear_on_submit=True):
                     patient_dosage,
                 ]
 
+                st.session_state["audit_log"].append(
+                    f"Patient {patient_id} ({patient_name}) admitted to High Priority Room"
+                )
+
             # No bed available -> send to waitlist
             else:
                 arrival_order = st.session_state["next_waitlist_order"]
@@ -172,12 +179,20 @@ with st.form("add_patient_form", clear_on_submit=True):
                     arrival_order,
                 ]
 
+                st.session_state["audit_log"].append(
+                    f"Patient {patient_id} ({patient_name}) added to Waitlist"
+                )
+
         # Normal patient
         else:
             st.session_state["normal_room"][patient_id] = [
                 patient_name,
                 patient_dosage,
             ]
+
+            st.session_state["audit_log"].append(
+                f"Patient {patient_id} ({patient_name}) admitted to Normal Room"
+            )
 
         st.success(f"Patient added successfully! Assigned ID: {patient_id}")
         st.rerun()
@@ -338,7 +353,7 @@ st.write("")
 # Dynamic rearrangement execution trigger
 if st.button("Apply Changes & Rearrange Patients", type="primary"):
     rearrange(
-        st.session_state["high_priority_room"], 
+        st.session_state["next_patient_idy_room"], 
         st.session_state["normal_room"], 
         st.session_state["waitlist"],
         ui_threshold, 

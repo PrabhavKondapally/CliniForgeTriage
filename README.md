@@ -1,4 +1,4 @@
-# CliniForge Triage (v 2.0)
+# CliniForge Triage (v 2.1)
 
 An interactive clinical workflow simulation developed in Python and Streamlit for modeling patient prioritization, capacity-aware room allocation, and dynamic patient redistribution under configurable operating constraints.
 
@@ -55,6 +55,14 @@ The project is designed to demonstrate practical programming concepts while main
 * Interactive patient management
 * Configurable operational parameters
 
+### Authentication & Access Control
+
+* Secure Firebase Authentication integration
+* Email/password account creation and login
+* Protected access to application pages
+* User-specific account identification via Firebase UID
+* Foundation for future cloud-based persistence
+
 ---
 
 ## System Design
@@ -89,9 +97,12 @@ Patient redistribution is performed dynamically as operating parameters or patie
 
 * Python
 * Streamlit
+* Firebase Authentication
+* Firestore (cloud persistence foundation)
 * Session State Management
 * Custom redistribution algorithms
 * Dynamic UI rendering
+
 
 ---
 
@@ -101,12 +112,17 @@ Patient redistribution is performed dynamically as operating parameters or patie
 CliniForgeTriage/
 │
 ├── app.py
+├── firebase_auth.py
+├── firebase_config.py
 ├── pages/
+│   ├── Login.py
 │   ├── Patient_Triage.py
-│   └── Chart_Review.py
+│   ├── Chart_Review.py
+│   └── Session_Info.py
 ├── cliniforge_logo.png
 ├── CliniForgeBanner.png
 └── README.md
+
 ```
 
 ---
@@ -118,9 +134,11 @@ Planned enhancements include:
 * CSV-based patient import/export
 * Statistical summaries and reporting
 * Interactive data visualization
+* Cloud-based patient persistence
 * Historical patient activity tracking
 * Expanded chart review capabilities
 * Clinical analytics dashboard
+* Multi-user cloud synchronization
 
 ---
 

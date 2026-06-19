@@ -52,8 +52,14 @@ main_page = st.Page("app.py", title="Main Dashboard", icon="📊", default=True)
 triage_page = st.Page("pages/Patient_Triage.py", title="Patient Triage", icon="📋")
 review_page = st.Page("pages/Chart_Review.py", title="Chart Review", icon="🔍")
 session_page = st.Page("pages/Session_Info.py", title="Session Information", icon="📝")
+login_page = st.Page("pages/Login.py", title="Login", icon="🔐")
 
-pg = st.navigation([main_page, triage_page, review_page, session_page])
+if not st.session_state.get("logged_in", False):
+    pg = st.navigation([login_page])
+else:
+    pg = st.navigation(
+        [main_page, triage_page, review_page, session_page]
+    )
 
 st.set_page_config(
     page_title="CliniForge Triage", 
@@ -96,7 +102,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+st.write("User:", st.session_state.get("user_email"))
+st.write("User ID:", st.session_state.get("user_id"))
 # Branding Header Section
 col1, col2 = st.columns([1, 4])
 with col1:
